@@ -46,6 +46,15 @@ from email import encoders
 load_dotenv()
 
 
+def attach_pdf_to_message(message, pdf_filename):
+    attachment = open(pdf_filename, "rb")
+    part = MIMEBase("application", "octet-stream")
+    part.set_payload(attachment.read())
+    encoders.encode_base64(part)
+    part.add_header("Content-Disposition", f"attachment; filename= {pdf_filename}")
+    message.attach(part)
+
+
 def send_email(first_name, last_name, company, template):
     sender_email = os.getenv("GMAIL_ADDRESS")
     sender_password = os.getenv("GMAIL_PASSWORD")
@@ -58,14 +67,8 @@ def send_email(first_name, last_name, company, template):
     message["Subject"] = "test subject"
     message.attach(MIMEText("test body", "plain"))
 
-    pdf_filename = "Kiron_Deb_Resume.pdf"
-    # attach resume to message
-    attachment = open(pdf_filename, "rb")
-    part = MIMEBase("application", "octet-stream")
-    part.set_payload(attachment.read())
-    encoders.encode_base64(part)
-    part.add_header("Content-Disposition", f"attachment; filename= {pdf_filename}")
-    message.attach(part)
+    attach_pdf_to_message(message, "Kiron_Deb_Resume.pdf")
+    attach_pdf_to_message(message, "Recommendations.pdf")
 
     try:
         context = ssl.create_default_context()

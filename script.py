@@ -39,6 +39,9 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from dotenv import load_dotenv
 import os
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
 
 load_dotenv()
 
@@ -54,11 +57,22 @@ def send_email(first_name, last_name, company, template):
     message["To"] = "kirondeb02@gmail.com"
     message["Subject"] = "test subject"
     message.attach(MIMEText("test body", "plain"))
+
+    pdf_filename = "Kiron_Deb_Resume.pdf"
+    # attach resume to message
+    attachment = open(pdf_filename, "rb")
+    part = MIMEBase("application", "octet-stream")
+    part.set_payload(attachment.read())
+    encoders.encode_base64(part)
+    part.add_header("Content-Disposition", f"attachment; filename= {pdf_filename}")
+    message.attach(part)
+
     try:
         context = ssl.create_default_context()
         with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
             server.login(sender_email, sender_password)
             # server.sendmail(sender_email, to_email, message.as_string())
+            server.sendmail(sender_email, "kirondeb02@gmail.com", message.as_string())
             response_code = server.quit()
             print(response_code)
         print(f"Email sent to {to_email}")

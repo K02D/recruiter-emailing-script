@@ -58,17 +58,34 @@ def attach_pdf_to_message(message, pdf_filename):
 def send_email(first_name, last_name, company, template):
     sender_email = os.getenv("GMAIL_ADDRESS")
     sender_password = os.getenv("GMAIL_PASSWORD")
+    # to_email = template.format(first=first_name, last=last_name, company=company)
+    to_email = "kirondeb02@gmail.com"
+    subject = "Junior With 4 Prior SWE Internships"
+    body = f"""
+        Hi {first_name.capitalize()}!
+        <br><br>
+        I'm Kiron, a junior studying computer science at Johns Hopkins University. I'm interested in the Software Engineering Intern role at {company.capitalize()}.
+        I have 10+ months of full-time software engineering experience, have received highly favorable LinkedIn recommendations from my managers at my two most 
+        recent internships, and got a 600/600 on the <a href="https://app.codesignal.com/evaluation-result/h6e5RxPPmW8XSr62v?accessToken=DbEuGSiPvv38cEqNF-m6eknvzG2pfynLyeQ8FbYwoz">Codesignal General Coding Framework test</a>.<br>
+        <br>
+        I'm eager to advance my career at {company.capitalize()} and would love if you could take a look at my resume. I apologize if this email was intrusive - thank you so much for your time!
+        <br>
+        <br>
+        Best,<br>
+        Kiron<br>
+        <a href="https://www.linkedin.com/in/kirondeb/">LinkedIn</a>
+        """
+    resume_filename = "Kiron_Deb_Resume.pdf"
+    recommendations_filename = "Recommendations.pdf"
 
     message = MIMEMultipart()
     message["From"] = sender_email
-    to_email = template.format(first=first_name, last=last_name, company=company)
-    print(to_email)
-    message["To"] = "kirondeb02@gmail.com"
-    message["Subject"] = "test subject"
-    message.attach(MIMEText("test body", "plain"))
+    message["To"] = to_email
+    message["Subject"] = subject
+    message.attach(MIMEText(body, "html"))
 
-    attach_pdf_to_message(message, "Kiron_Deb_Resume.pdf")
-    attach_pdf_to_message(message, "Recommendations.pdf")
+    attach_pdf_to_message(message, resume_filename)
+    attach_pdf_to_message(message, recommendations_filename)
 
     try:
         context = ssl.create_default_context()
@@ -95,6 +112,8 @@ def email_recruiters(company_to_recruiters, company_to_email_format):
         for recruiter in recruiters:
             first_name, last_name = recruiter
             send_email(first_name, last_name, company, email_format)
+            break  # TODO: Remove this
+        break  # TODO: Remove this
 
 
 # Read in csv

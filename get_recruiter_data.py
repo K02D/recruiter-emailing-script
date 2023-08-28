@@ -1,24 +1,33 @@
 import requests
-from bs4 import BeautifulSoup
+import re
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+pattern = r"\b[A-Z][a-z]+\s[A-Z][a-z]+\b"
 
 
 def get_stripe_university_recruiters():
-    url = "https://www.linkedin.com/jobs/search/?keywords=stripe%20university%20recruiter&location=Anywhere"
-    response = requests.get(url)
-    soup = BeautifulSoup(response.content, "html.parser")
+    url = "https://customsearch.googleapis.com/customsearch/v1"
+    params = {
+        "cx": "a4cc2c236a1b740ff",
+        "key": os.getenv("GOOGLE_CUSTOM_SEARCH_API_KEY"),
+        "q": "site:linkedin.com university recruiter at stripe",
+        "start": "1",
+    }
+    headers = {"Accept": "application/json"}
+    results = []
+    for _ in range(5):
+        response = requests.get(url, params=params, headers=headers)
+        data = response.json()
+        search_results = data["items"]
+        for s in search_results:
+            full_name = re.findall(pattern, s["title"])
+            if len(full_name) > 0:
+                results.append(full_name[0])
+        params["start"] = data["queries"]["nextPage"][0]["startIndex"]
+    print(results)
 
-    recruiters = []
-    print(response.content)
-    for li in soup.find_all("li", class_="result-item"):
-        recruiter = {}
-        recruiter["name"] = li.find("h3", class_="result-title").text
-        recruiter["linkedin_url"] = li.find("a", class_="result-link")["href"]
-        recruiters.append(recruiter)
 
-    return recruiters
-
-
-recruiters = get_stripe_university_recruiters()
-print(recruiters)
-for recruiter in recruiters:
-    print(recruiter["name"] + ": " + recruiter["linkedin_url"])
+get_stripe_university_recruiters()

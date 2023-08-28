@@ -1,9 +1,3 @@
-"""
-Iterate over all rows and map companies to recruiters
-
-For each company, find the valid email format by trying first.last@company.com, flast@company.com, firstlast@company.com, etc
-for the first recruiter. If the email fails to get sent for a format, try the next format. If the email is sent successfully, send the email to all recruiters in the company.
-"""
 import csv
 from collections import defaultdict
 

@@ -8,12 +8,12 @@ load_dotenv()
 pattern = r"\b[A-Z][a-z]+\s[A-Z][a-z]+\b"
 
 
-def get_stripe_university_recruiters():
+def get_university_recruiters(company):
     url = "https://customsearch.googleapis.com/customsearch/v1"
     params = {
         "cx": "a4cc2c236a1b740ff",
         "key": os.getenv("GOOGLE_CUSTOM_SEARCH_API_KEY"),
-        "q": "site:linkedin.com university recruiter at stripe",
+        "q": f"site:linkedin.com university recruiter at {company}",
         "start": "1",
     }
     headers = {"Accept": "application/json"}
@@ -28,6 +28,16 @@ def get_stripe_university_recruiters():
                 results.append(full_name[0])
         params["start"] = data["queries"]["nextPage"][0]["startIndex"]
     print(results)
+    return results
 
 
-get_stripe_university_recruiters()
+import csv
+
+companies = {"stripe", "google", "databricks", "amazon", "microsoft", "meta"}
+for company in companies:
+    recruiters = get_university_recruiters(company)
+    for recruiter in recruiters:
+        # Add to recruiters.csv using csv module
+        with open("recruiters.csv", "a") as f:
+            writer = csv.writer(f)
+            writer.writerow([recruiter, company])

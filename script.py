@@ -3,15 +3,14 @@ from collections import defaultdict
 
 
 def get_company_to_recruiters():
-    with open("test.csv", "r") as f:
+    with open("recruiters.csv", "r") as f:
         reader = csv.reader(f)
         rows = list(reader)
     company_to_recruiters = defaultdict(list)
     for i in range(1, len(rows)):
-        first_name = rows[i][0].lower().strip()
-        last_name = rows[i][1].lower().strip()
-        company = rows[i][2].lower().strip()
-        company_to_recruiters[company].append((first_name, last_name))
+        name = rows[i][0]
+        company = rows[i][1].lower().strip()
+        company_to_recruiters[company].append(name)
     return company_to_recruiters
 
 
@@ -97,15 +96,13 @@ def send_email(first_name, last_name, company, template):
 
 def email_recruiters(company_to_recruiters, company_to_email_format):
     company_to_recruiters = get_company_to_recruiters()
-    print(company_to_recruiters)
     for company in company_to_recruiters:
-        print(company)
         email_format = company_to_email_format[company]
         recruiters = company_to_recruiters[company]
         print(company, recruiters, email_format)
         for recruiter in recruiters:
-            first_name, last_name = recruiter
-            send_email(first_name, last_name, company, email_format)
+            first_name, last_name = recruiter.split(" ")
+            send_email(first_name.lower(), last_name.lower(), company, email_format)
             break  # TODO: Remove this
         break  # TODO: Remove this
 

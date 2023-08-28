@@ -24,8 +24,6 @@ def get_company_to_email_format():
     return company_to_email_format
 
 
-# print(get_company_to_email_format())
-
 import smtplib
 import ssl
 from email.mime.text import MIMEText
@@ -51,8 +49,8 @@ def attach_pdf_to_message(message, pdf_filename):
 def send_email(first_name, last_name, company, template):
     sender_email = os.getenv("GMAIL_ADDRESS")
     sender_password = os.getenv("GMAIL_PASSWORD")
-    # to_email = template.format(first=first_name, last=last_name, company=company)
-    to_email = "kirondeb02@gmail.com"
+    to_email = template.format(first=first_name, last=last_name, company=company)
+    # to_email = "kirondeb02@gmail.com"
     subject = "Junior With 4 Prior SWE Internships"
     body = f"""
         Hi {first_name.capitalize()}!
@@ -84,8 +82,8 @@ def send_email(first_name, last_name, company, template):
         context = ssl.create_default_context()
         with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
             server.login(sender_email, sender_password)
-            # server.sendmail(sender_email, to_email, message.as_string())
-            server.sendmail(sender_email, "kirondeb02@gmail.com", message.as_string())
+            server.sendmail(sender_email, to_email, message.as_string())
+            # server.sendmail(sender_email, "kirondeb02@gmail.com", message.as_string())
             response_code = server.quit()
             print(response_code)
         print(f"Email sent to {to_email}")
@@ -103,8 +101,6 @@ def email_recruiters(company_to_recruiters, company_to_email_format):
         for recruiter in recruiters:
             first_name, last_name = recruiter.split(" ")
             send_email(first_name.lower(), last_name.lower(), company, email_format)
-            break  # TODO: Remove this
-        break  # TODO: Remove this
 
 
 # Read in csv

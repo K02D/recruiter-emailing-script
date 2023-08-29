@@ -87,9 +87,11 @@ def send_email(first_name, last_name, company, template):
             response_code = server.quit()
             print(response_code)
         print(f"Email sent to {to_email}")
+        return True
     except Exception as e:
         print(f"Failed to send email to {to_email}")
         print("Error:", e)
+        return False
 
 
 def get_recruiters_emailed_already():
@@ -111,10 +113,12 @@ def email_recruiters(company_to_recruiters, company_to_email_format):
         for recruiter in recruiters:
             if recruiter not in recruiters_emailed_already:
                 first_name, last_name = recruiter.split(" ")
-                send_email(first_name.lower(), last_name.lower(), company, email_format)
-                with open("emailed_already.csv", "a") as f:
-                    writer = csv.writer(f)
-                    writer.writerow([recruiter])
+                if send_email(
+                    first_name.lower(), last_name.lower(), company, email_format
+                ):
+                    with open("emailed_already.csv", "a") as f:
+                        writer = csv.writer(f)
+                        writer.writerow([recruiter])
 
 
 # Read in csv

@@ -3,5 +3,7 @@ google,{first[0]}{last}@google.com
 databricks,{first}.{last}@databricks.com
 stripe,{first}@stripe.com
 microsoft,{first}.{last}@microsoft.com
-meta,{first[0]}
+meta,{first[0]}{last}@fb.com
 amazon,{last}{first[0]}@amazon.com
+atlassian,{first[0]}{last}@atlassian.com
+linkedin,{first[0]}{last}@linkedin.com

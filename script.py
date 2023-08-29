@@ -8,7 +8,7 @@ def get_company_to_recruiters():
         rows = list(reader)
     company_to_recruiters = defaultdict(list)
     for i in range(1, len(rows)):
-        name = rows[i][0]
+        name = rows[i][0].strip()
         company = rows[i][1].lower().strip()
         company_to_recruiters[company].append(name)
     return company_to_recruiters
@@ -92,15 +92,29 @@ def send_email(first_name, last_name, company, template):
         print("Error:", e)
 
 
+def get_recruiters_emailed_already():
+    with open("emailed_already.csv", "r") as f:
+        reader = csv.reader(f)
+        rows = list(reader)
+    recruiters_emailed = set()
+    for i in range(1, len(rows)):
+        recruiters_emailed.add(rows[i][0].strip())
+    return recruiters_emailed
+
+
 def email_recruiters(company_to_recruiters, company_to_email_format):
     company_to_recruiters = get_company_to_recruiters()
+    recruiters_emailed_already = get_recruiters_emailed_already()
     for company in company_to_recruiters:
         email_format = company_to_email_format[company]
         recruiters = company_to_recruiters[company]
-        print(company, recruiters, email_format)
         for recruiter in recruiters:
-            first_name, last_name = recruiter.split(" ")
-            send_email(first_name.lower(), last_name.lower(), company, email_format)
+            if recruiter not in recruiters_emailed_already:
+                first_name, last_name = recruiter.split(" ")
+                send_email(first_name.lower(), last_name.lower(), company, email_format)
+                with open("emailed_already.csv", "a") as f:
+                    writer = csv.writer(f)
+                    writer.writerow([recruiter])
 
 
 # Read in csv
